@@ -1,6 +1,8 @@
 package kibar.readingisgood.order.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
+import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +17,11 @@ import kibar.readingisgood.customer.service.CustomerService;
 import kibar.readingisgood.order.data.model.Order;
 import kibar.readingisgood.order.data.model.OrderStatus;
 import kibar.readingisgood.order.data.payload.CreateOrderRequest;
+import kibar.readingisgood.order.data.payload.ListOrderByCustomerIdRequest;
 import kibar.readingisgood.order.data.payload.ListOrderByDateRequest;
 import kibar.readingisgood.order.data.payload.UpdateOrderStatusRequest;
 import kibar.readingisgood.order.exception.ListOrderBetweenDateInvalidInputException;
+import kibar.readingisgood.order.exception.OrderNotExistException;
 import kibar.readingisgood.order.exception.OutOfStockException;
 import kibar.readingisgood.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +41,12 @@ public class OrderService {
     public Mono<Order> getById(String id) {
         return orderRepository.findById(id)
                 .onErrorMap(throwable -> new CustomerNotExistException(String.format("Order with id '%s' not exist.", id)));
+    }
+
+    public Flux<Page<Order>> getAllByCustomerId(ListOrderByCustomerIdRequest listOrderByCustomerIdRequest) {
+        return orderRepository.findByCustomerId(listOrderByCustomerIdRequest.getId(), listOrderByCustomerIdRequest.getPageRequest())
+                .filter(Streamable::isEmpty)
+                .switchIfEmpty(Flux.defer(() -> Flux.error(new OrderNotExistException("User does not have any orders"))));
     }
 
     public Flux<Order> getAll() {

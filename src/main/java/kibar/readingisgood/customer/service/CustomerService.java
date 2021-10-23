@@ -1,13 +1,17 @@
 package kibar.readingisgood.customer.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import kibar.readingisgood.customer.data.model.Customer;
 import kibar.readingisgood.customer.data.payload.AddCustomerRequest;
+import kibar.readingisgood.customer.data.payload.GetAllOrderByCustomerIdRequest;
 import kibar.readingisgood.customer.exception.CustomerAlreadyExistException;
 import kibar.readingisgood.customer.exception.CustomerNotExistException;
 import kibar.readingisgood.customer.repository.CustomerRepository;
+import kibar.readingisgood.order.data.model.Order;
+import kibar.readingisgood.order.data.payload.ListOrderByCustomerIdRequest;
 import kibar.readingisgood.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -31,6 +35,11 @@ public class CustomerService {
     public Mono<Customer> getByEmail(String email) {
         return customerRepository.findByEmail(email)
                 .onErrorMap(throwable -> new CustomerNotExistException(String.format("Customer with email '%s' not exist.", email)));
+    }
+
+    public Flux<Page<Order>> getOrdersByCustomerId(GetAllOrderByCustomerIdRequest getAllOrderByCustomerIdRequest) {
+        return getById(getAllOrderByCustomerIdRequest.getId())
+                .flatMapMany(_ignore -> orderService.getAllByCustomerId(new ListOrderByCustomerIdRequest(getAllOrderByCustomerIdRequest.getId(), getAllOrderByCustomerIdRequest.getPageRequest())));
     }
 
     public Flux<Customer> getAll() {
