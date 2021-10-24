@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ListOrderByCustomerIdRequest {
+public class ListOrdersByCustomerIdRequest {
 
     @NotNull
     @NotBlank

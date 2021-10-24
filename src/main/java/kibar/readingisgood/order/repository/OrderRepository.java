@@ -1,18 +1,19 @@
 package kibar.readingisgood.order.repository;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import kibar.readingisgood.order.data.model.Order;
 import reactor.core.publisher.Flux;
 
 public interface OrderRepository extends ReactiveMongoRepository<Order, String> {
 
-    Flux<Page<Order>> findByCustomerId(String customerId, Pageable pageable);
+    Flux<Order> findAllByCustomerId(String customerId, Pageable pageable);
 
-    Flux<Order> findByDateBetween(Date from, Date to);
+    @Query("{'createdAt' : { $gte: ?0, $lte: ?1 } }")
+    Flux<Order> findTopByDateBetween(LocalDateTime from, LocalDateTime to, Pageable pageable);
 
 }

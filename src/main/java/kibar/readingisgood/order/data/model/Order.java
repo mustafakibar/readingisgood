@@ -2,6 +2,7 @@ package kibar.readingisgood.order.data.model;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(collation = "orders")
+@Document(collection = "orders")
 public class Order {
 
     @Id
@@ -29,6 +30,9 @@ public class Order {
 
     @CreatedDate
     private Date createdAt;
+
+    @Version
+    private Integer version;
 
     private OrderStatus status;
 

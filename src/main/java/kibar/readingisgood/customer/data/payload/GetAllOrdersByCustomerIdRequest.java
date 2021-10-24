@@ -1,9 +1,10 @@
-package kibar.readingisgood.order.data.payload;
+package kibar.readingisgood.customer.data.payload;
+
+import org.springframework.data.domain.PageRequest;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import kibar.readingisgood.order.data.model.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateOrderStatusRequest {
+public class GetAllOrdersByCustomerIdRequest {
 
     @NotNull
     @NotBlank
@@ -21,6 +22,6 @@ public class UpdateOrderStatusRequest {
 
     @NotNull
     @NotBlank
-    private OrderStatus orderStatus;
+    private PageRequest pageRequest;
 
 }

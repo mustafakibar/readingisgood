@@ -1,7 +1,5 @@
 package kibar.readingisgood.security;
 
-import org.springframework.stereotype.Service;
-
 import java.security.KeyPair;
 import java.time.Duration;
 import java.time.Instant;
@@ -13,7 +11,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
-@Service
+//@Service
 public class JwtSigner {
 
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.RS512;

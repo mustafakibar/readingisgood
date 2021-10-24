@@ -1,25 +1,16 @@
 package kibar.readingisgood.order.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.util.Pair;
-import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-import kibar.readingisgood.book.data.model.Book;
-import kibar.readingisgood.book.data.payload.UpdateBookStockRequest;
 import kibar.readingisgood.book.service.BookService;
-import kibar.readingisgood.customer.data.model.Customer;
-import kibar.readingisgood.customer.exception.CustomerNotExistException;
-import kibar.readingisgood.customer.service.CustomerService;
 import kibar.readingisgood.order.data.model.Order;
 import kibar.readingisgood.order.data.model.OrderStatus;
 import kibar.readingisgood.order.data.payload.CreateOrderRequest;
-import kibar.readingisgood.order.data.payload.ListOrderByCustomerIdRequest;
 import kibar.readingisgood.order.data.payload.ListOrderByDateRequest;
-import kibar.readingisgood.order.data.payload.UpdateOrderStatusRequest;
+import kibar.readingisgood.order.data.payload.ListOrdersByCustomerIdRequest;
 import kibar.readingisgood.order.exception.ListOrderBetweenDateInvalidInputException;
 import kibar.readingisgood.order.exception.OrderNotExistException;
 import kibar.readingisgood.order.exception.OutOfStockException;
@@ -36,16 +27,14 @@ public class OrderService {
 
     private final BookService bookService;
     private final OrderRepository orderRepository;
-    private final CustomerService customerService;
 
-    public Mono<Order> getById(String id) {
-        return orderRepository.findById(id)
-                .onErrorMap(throwable -> new CustomerNotExistException(String.format("Order with id '%s' not exist.", id)));
+    public Mono<Order> getById(String orderId) {
+        return orderRepository.findById(orderId)
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new OrderNotExistException(String.format("Order with id '%s' not exist.", orderId)))));
     }
 
-    public Flux<Page<Order>> getAllByCustomerId(ListOrderByCustomerIdRequest listOrderByCustomerIdRequest) {
-        return orderRepository.findByCustomerId(listOrderByCustomerIdRequest.getId(), listOrderByCustomerIdRequest.getPageRequest())
-                .filter(Streamable::isEmpty)
+    public Flux<Order> getAllByCustomerId(ListOrdersByCustomerIdRequest listOrdersByCustomerIdRequest) {
+        return orderRepository.findAllByCustomerId(listOrdersByCustomerIdRequest.getId(), listOrdersByCustomerIdRequest.getPageRequest())
                 .switchIfEmpty(Flux.defer(() -> Flux.error(new OrderNotExistException("User does not have any orders"))));
     }
 
@@ -54,16 +43,16 @@ public class OrderService {
     }
 
     public Flux<Order> getAllBetweenDates(ListOrderByDateRequest listOrderByDateRequest) {
-        Date start = listOrderByDateRequest.getFrom();
-        Date end = listOrderByDateRequest.getTo();
+        LocalDateTime start = listOrderByDateRequest.getFrom();
+        LocalDateTime end = listOrderByDateRequest.getTo();
 
-        if (end.before(start)) {
-            // Note: tF for date format, tT for time format, and, %1 and %2 for indexing
+        if (end.isBefore(start)) {
+            // Note: tF: ISO date format, tT: ISO time format, %1$ and %2$ for indexing
             String message = String.format("End date '%2$tF-%2$tT' can not be less than start date '%1$tF-%1$tT'", start, end);
             return Flux.error(new ListOrderBetweenDateInvalidInputException(message));
         }
 
-        return orderRepository.findByDateBetween(listOrderByDateRequest.getFrom(), listOrderByDateRequest.getTo());
+        return orderRepository.findTopByDateBetween(listOrderByDateRequest.getFrom(), listOrderByDateRequest.getTo(), listOrderByDateRequest.getPageRequest());
     }
 
     @Transactional
@@ -71,16 +60,12 @@ public class OrderService {
         return bookService.getById(createOrderRequest.getBookId())
                 .filter(book -> book.getStock() >= createOrderRequest.getAmount())
                 .switchIfEmpty(Mono.defer(() -> Mono.error(new OutOfStockException("The product you ordered is out of stock"))))
-                .flatMap(book -> bookService.updateStock(new UpdateBookStockRequest(createOrderRequest.getBookId(), book.getStock() - createOrderRequest.getAmount())))
+                .flatMap(book -> bookService.updateStock(createOrderRequest.getBookId(), book.getStock() - createOrderRequest.getAmount()))
                 .doOnError(throwable -> {}) // stock update hatası logla
-                .flatMap(book -> customerService.getById(createOrderRequest.getCustomerId()).map(customer -> Pair.of(book, customer)))
-                .flatMap(pair -> {
-                    Book book = pair.getFirst();
-                    Customer customer = pair.getSecond();
-
+                .flatMap(book -> {
                     Order order = Order.builder()
-                            .bookId(book.getId())
-                            .customerId(customer.getId())
+                            .bookId(createOrderRequest.getBookId())
+                            .customerId(createOrderRequest.getCustomerId())
                             .amount(createOrderRequest.getAmount())
                             .status(OrderStatus.INPROGRESS)
                             .build();
@@ -90,25 +75,24 @@ public class OrderService {
     }
 
     @Transactional
-    public Mono<Order> updateStatus(UpdateOrderStatusRequest updateOrderStatusRequest) {
-        return getById(updateOrderStatusRequest.getId())
+    public Mono<Order> updateStatus(String orderId, OrderStatus newOrderStatus) {
+        return getById(orderId)
                 .flatMap(order -> {
-                    if (order.getStatus() == updateOrderStatusRequest.getOrderStatus()) {
+                    if (order.getStatus() == newOrderStatus) {
                         return Mono.just(order);
                     } else {
-                        order.setStatus(updateOrderStatusRequest.getOrderStatus());
+                        order.setStatus(newOrderStatus);
 
                         Mono<Order> result;
-                        if (updateOrderStatusRequest.getOrderStatus() == OrderStatus.REJECTED) {
+                        if (newOrderStatus == OrderStatus.REJECTED) {
                             result = bookService.getById(order.getBookId())
-                                    .flatMap(book -> bookService.updateStock(new UpdateBookStockRequest(book.getId(), Long.sum(book.getStock(), order.getAmount()))))
+                                    .flatMap(book -> bookService.updateStock(book.getId(), Long.sum(book.getStock(), order.getAmount())))
                                     .map(book -> order);
                         } else {
                             result = Mono.just(order);
                         }
 
                         return result.flatMap(orderRepository::save);
-
                     }
                 });
     }

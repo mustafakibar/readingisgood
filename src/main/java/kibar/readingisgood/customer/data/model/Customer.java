@@ -1,5 +1,7 @@
 package kibar.readingisgood.customer.data.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(collation = "customers")
+@Document(collection = "customers")
 public class Customer {
 
     @Id
@@ -22,8 +24,9 @@ public class Customer {
     private String name;
 
     @Indexed(unique = true)
-    private String mail;
+    private String email;
 
+    @JsonIgnore
     private String password;
 
 }

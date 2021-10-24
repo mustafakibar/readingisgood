@@ -1,6 +1,8 @@
 package kibar.readingisgood.order.data.payload;
 
-import java.util.Date;
+import org.springframework.data.domain.PageRequest;
+
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -18,10 +20,14 @@ public class ListOrderByDateRequest {
 
     @NotNull
     @NotBlank
-    private Date from;
+    private LocalDateTime from;
 
     @NotNull
     @NotBlank
-    private Date to;
+    private LocalDateTime to;
+
+    @NotNull
+    @NotBlank
+    private PageRequest pageRequest;
 
 }

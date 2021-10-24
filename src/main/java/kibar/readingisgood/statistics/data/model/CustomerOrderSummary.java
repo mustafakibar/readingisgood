@@ -11,8 +11,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CustomerOrderSummary {
 
+    String month;
+
     private Long totalOrderCount;
-    
+
     private Long totalBookCount;
 
 }

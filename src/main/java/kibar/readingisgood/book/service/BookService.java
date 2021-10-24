@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 
 import kibar.readingisgood.book.data.model.Book;
 import kibar.readingisgood.book.data.payload.AddBookRequest;
-import kibar.readingisgood.book.data.payload.UpdateBookStockRequest;
 import kibar.readingisgood.book.exception.BookAlreadyExistException;
 import kibar.readingisgood.book.exception.BookNotExistException;
 import kibar.readingisgood.book.repository.BookRepository;
@@ -20,9 +19,9 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
-    public Mono<Book> getById(String id) {
-        return bookRepository.findById(id)
-                .onErrorMap(throwable -> new BookNotExistException(String.format("Book with id '%s' not exist.", id)));
+    public Mono<Book> getById(String bookId) {
+        return bookRepository.findById(bookId)
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new BookNotExistException(String.format("Book with id '%s' not exist.", bookId)))));
     }
 
     public Flux<Book> getAll() {
@@ -45,10 +44,10 @@ public class BookService {
                 });
     }
 
-    public Mono<Book> updateStock(UpdateBookStockRequest updateBookStockRequest) {
-        return getById(updateBookStockRequest.getId())
+    public Mono<Book> updateStock(String bookId, Long amount) {
+        return getById(bookId)
                 .flatMap(book -> {
-                    book.setStock(updateBookStockRequest.getAmount());
+                    book.setStock(amount);
                     return bookRepository.save(book);
                 });
     }
