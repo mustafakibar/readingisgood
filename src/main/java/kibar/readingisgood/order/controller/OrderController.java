@@ -49,7 +49,7 @@ public class OrderController {
             @RequestParam(value = "customerId") String customerId,
             @RequestParam(defaultValue = "0", value = "page", required = false) Integer page,
             @RequestParam(defaultValue = "9", value = "size", required = false) Integer size) {
-        ListOrdersByCustomerIdRequest listOrdersByCustomerIdRequest = ListOrdersByCustomerIdRequest.builder()
+        var listOrdersByCustomerIdRequest = ListOrdersByCustomerIdRequest.builder()
                 .id(customerId)
                 .pageRequest(PageRequest.of(page, size))
                 .build();
@@ -64,7 +64,7 @@ public class OrderController {
             @RequestParam(defaultValue = "0", value = "page", required = false) Integer page,
             @RequestParam(defaultValue = "9", value = "size", required = false) Integer size
     ) {
-        ListOrderByDateRequest listOrderByDateRequest = ListOrderByDateRequest.builder()
+        var listOrderByDateRequest = ListOrderByDateRequest.builder()
                 .from(from)
                 .to(to)
                 .pageRequest(PageRequest.of(page, size))

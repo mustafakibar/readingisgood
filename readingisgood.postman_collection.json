@@ -1,0 +1,403 @@
+{
+	"info": {
+		"_postman_id": "1b4a2267-adb8-4abc-9f00-cc6b44754710",
+		"name": "readingisgood",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "book",
+			"item": [
+				{
+					"name": "Add new book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Nutuk\",\n    \"stock\": 57\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{books_url}}",
+							"host": [
+								"{{books_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all books",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{books_url}}",
+							"host": [
+								"{{books_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get book by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{books_url}}/6175c0781bf7e42ba1dc5b02",
+							"host": [
+								"{{books_url}}"
+							],
+							"path": [
+								"6175c0781bf7e42ba1dc5b02"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update book stock",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{books_url}}/6175c0781bf7e42ba1dc5b02?stock=57",
+							"host": [
+								"{{books_url}}"
+							],
+							"path": [
+								"6175c0781bf7e42ba1dc5b02"
+							],
+							"query": [
+								{
+									"key": "stock",
+									"value": "57"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "customer",
+			"item": [
+				{
+					"name": "Add new customer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"getir\",\n    \"password\": \"bimutluluk\",\n    \"mail\": \"getir@bimutluluk.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{customers_url}}",
+							"host": [
+								"{{customers_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all customers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{customers_url}}/",
+							"host": [
+								"{{customers_url}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get customer by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{customers_url}}/6175c0331bf7e42ba1dc5b01",
+							"host": [
+								"{{customers_url}}"
+							],
+							"path": [
+								"6175c0331bf7e42ba1dc5b01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get customer by email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{customers_url}}?email=getir@bimutluluk.com",
+							"host": [
+								"{{customers_url}}"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "getir@bimutluluk.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all orders by customer id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{customers_url}}/6175c0331bf7e42ba1dc5b01/orders",
+							"host": [
+								"{{customers_url}}"
+							],
+							"path": [
+								"6175c0331bf7e42ba1dc5b01",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "order",
+			"item": [
+				{
+					"name": "Add new order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerId\": \"6175c0331bf7e42ba1dc5b01\",\n    \"bookId\": \"6175c0781bf7e42ba1dc5b02\",\n    \"amount\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{orders_url}}",
+							"host": [
+								"{{orders_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{orders_url}}/",
+							"host": [
+								"{{orders_url}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all by customer id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{orders_url}}/?customerId=6175c0331bf7e42ba1dc5b01&page=0&size=2",
+							"host": [
+								"{{orders_url}}"
+							],
+							"path": [
+								""
+							],
+							"query": [
+								{
+									"key": "customerId",
+									"value": "6175c0331bf7e42ba1dc5b01"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all between dates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{orders_url}}/?from=2021-10-23T18:50:17&to=2021-10-25T18:50:17&page=0&size=2",
+							"host": [
+								"{{orders_url}}"
+							],
+							"path": [
+								""
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "2021-10-23T18:50:17"
+								},
+								{
+									"key": "to",
+									"value": "2021-10-25T18:50:17"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{orders_url}}/6175c0b01bf7e42ba1dc5b03",
+							"host": [
+								"{{orders_url}}"
+							],
+							"path": [
+								"6175c0b01bf7e42ba1dc5b03"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update order status",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{orders_url}}/6175c0b01bf7e42ba1dc5b03?status=FINISHED",
+							"host": [
+								"{{orders_url}}"
+							],
+							"path": [
+								"6175c0b01bf7e42ba1dc5b03"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "FINISHED"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "statistics",
+			"item": [
+				{
+					"name": "Get order summary by customer id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{statistics_url}}/order-summary?customerId=6175c0331bf7e42ba1dc5b01",
+							"host": [
+								"{{statistics_url}}"
+							],
+							"path": [
+								"order-summary"
+							],
+							"query": [
+								{
+									"key": "customerId",
+									"value": "6175c0331bf7e42ba1dc5b01"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

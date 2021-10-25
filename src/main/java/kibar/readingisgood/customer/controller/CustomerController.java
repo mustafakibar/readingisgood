@@ -47,7 +47,7 @@ public class CustomerController {
             @PathVariable(value = "id") String customerId,
             @RequestParam(defaultValue = "0", value = "page", required = false) Integer page,
             @RequestParam(defaultValue = "9", value = "size", required = false) Integer size) {
-        GetAllOrdersByCustomerIdRequest listOrderByCustomerIdRequest = GetAllOrdersByCustomerIdRequest.builder()
+        var listOrderByCustomerIdRequest = GetAllOrdersByCustomerIdRequest.builder()
                 .id(customerId)
                 .pageRequest(PageRequest.of(page, size))
                 .build();
